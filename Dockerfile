@@ -1,5 +1,5 @@
 # Minimalistisches Dockerfile für BetBuddy Backend
-FROM python:3.13.5-slim
+FROM python:3.13-slim
 
 # Arbeitsverzeichnis
 WORKDIR /app
