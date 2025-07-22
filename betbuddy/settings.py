@@ -156,14 +156,20 @@ LOGGING = {
     },
 }
 
-# Production-Security-Settings
-CSRF_TRUSTED_ORIGINS = [
-    origin for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin
-]
-SECURE_PROXY_SSL_HEADER = (
-    ("HTTP_X_FORWARDED_PROTO", "https")
-    if os.environ.get("DJANGO_USE_X_FORWARDED_PROTO", "False").lower() in ("1", "true", "yes")
-    else None
+# Production-Security-Settings (siehe README)
+SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", "False"
+).lower() in ("1", "true", "yes")
+SECURE_HSTS_PRELOAD = os.environ.get("DJANGO_SECURE_HSTS_PRELOAD", "False").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "False").lower() in (
+    "1",
+    "true",
+    "yes",
 )
 SESSION_COOKIE_SECURE = os.environ.get("DJANGO_SESSION_COOKIE_SECURE", "False").lower() in (
     "1",

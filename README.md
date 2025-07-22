@@ -44,7 +44,9 @@ Automatisiertes Backend für Fußballwetten-Analyse und Wettempfehlungen.
 
 - `DJANGO_CSRF_TRUSTED_ORIGINS`: Kommagetrennte Liste vertrauenswürdiger Domains für CSRF-Schutz (z. B. https://meine-domain.de)
 - `DJANGO_USE_X_FORWARDED_PROTO`: Auf `True` setzen, wenn ein Proxy wie nginx/Traefik SSL terminiert
-- `DJANGO_SESSION_COOKIE_SECURE`, `DJANGO_CSRF_COOKIE_SECURE`: Auf `True` setzen, wenn HTTPS verwendet wird
+- `DJANGO_SECURE_HSTS_SECONDS`, `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`: HTTP Strict Transport Security (HSTS) – in Entwicklung auf 0/False, in Produktion aktivieren
+- `DJANGO_SECURE_SSL_REDIRECT`: Leitet HTTP auf HTTPS um – in Entwicklung auf False, in Produktion auf True
+- `DJANGO_SESSION_COOKIE_SECURE`, `DJANGO_CSRF_COOKIE_SECURE`: Cookies nur über HTTPS – in Entwicklung auf False, in Produktion auf True
   
 **Statische Dateien:** In Produktion müssen statische Dateien (z. B. /static/admin/...) von einem Webserver wie nginx ausgeliefert werden. Siehe Django-Doku zu "Deploying static files". 
 

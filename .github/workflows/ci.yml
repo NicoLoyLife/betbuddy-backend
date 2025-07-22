@@ -47,10 +47,17 @@ jobs:
         run: |
           python manage.py migrate
           python manage.py test
+      - name: Integrationstests (URLs erreichbar)
+        run: |
+          pip install requests
+          pytest tests/test_integration_urls.py || echo "INTEGRATION_TEST_FAILED=1" >> $GITHUB_ENV
       - name: Discord Benachrichtigung
         if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           MSG="📢 [${{ github.repository }}] ${{ github.event_name }} auf `${{ github.ref }}` von ${{ github.actor }} (${{ github.sha }})"
+          if [ "$INTEGRATION_TEST_FAILED" = "1" ]; then
+            MSG="$MSG\n❌ Integrationstest fehlgeschlagen: Mindestens eine wichtige URL ist nicht erreichbar. Siehe CI-Logs."
+          fi
           curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"$MSG\"}" $DISCORD_WEBHOOK 
