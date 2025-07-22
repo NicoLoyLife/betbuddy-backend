@@ -4,6 +4,8 @@ FROM python:3.13-slim
 # Arbeitsverzeichnis
 WORKDIR /app
 
+RUN apt-get update && apt-get upgrade -y && apt-get clean
+
 # Abhängigkeiten
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
