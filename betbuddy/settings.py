@@ -155,3 +155,23 @@ LOGGING = {
         "level": LOG_LEVEL,
     },
 }
+
+# Production-Security-Settings
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin
+]
+SECURE_PROXY_SSL_HEADER = (
+    ("HTTP_X_FORWARDED_PROTO", "https")
+    if os.environ.get("DJANGO_USE_X_FORWARDED_PROTO", "False").lower() in ("1", "true", "yes")
+    else None
+)
+SESSION_COOKIE_SECURE = os.environ.get("DJANGO_SESSION_COOKIE_SECURE", "False").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+CSRF_COOKIE_SECURE = os.environ.get("DJANGO_CSRF_COOKIE_SECURE", "False").lower() in (
+    "1",
+    "true",
+    "yes",
+)

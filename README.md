@@ -38,3 +38,41 @@ Automatisiertes Backend für Fußballwetten-Analyse und Wettempfehlungen.
   ```bash
   pre-commit run --all-files
   ``` 
+**Hinweis:** Im Docker-Setup für Entwicklung liefert Django die statischen Dateien selbst aus. In Produktion müssen statische Dateien (z. B. /static/admin/...) von einem Webserver wie nginx ausgeliefert werden. Siehe Django-Doku zu "Deploying static files". 
+
+## Hinweise für Produktion
+
+- `DJANGO_CSRF_TRUSTED_ORIGINS`: Kommagetrennte Liste vertrauenswürdiger Domains für CSRF-Schutz (z. B. https://meine-domain.de)
+- `DJANGO_USE_X_FORWARDED_PROTO`: Auf `True` setzen, wenn ein Proxy wie nginx/Traefik SSL terminiert
+- `DJANGO_SESSION_COOKIE_SECURE`, `DJANGO_CSRF_COOKIE_SECURE`: Auf `True` setzen, wenn HTTPS verwendet wird
+  
+**Statische Dateien:** In Produktion müssen statische Dateien (z. B. /static/admin/...) von einem Webserver wie nginx ausgeliefert werden. Siehe Django-Doku zu "Deploying static files". 
+
+## Best Practices für Produktion
+
+- **Django- und Python-Version aktuell halten**: Immer aktuelle, sichere Versionen nutzen.
+- **Datenbank- und Backup-Strategie**: Regelmäßige Backups, sichere DB-User, Restore testen.
+- **Gunicorn/Uvicorn-Konfiguration**: Worker-Anzahl und Timeouts sinnvoll setzen.
+- **Reverse Proxy/Webserver (nginx, Traefik)**: Statische/Medien-Dateien ausliefern, HTTPS aktivieren, HTTP auf HTTPS umleiten.
+- **Sicherheits-Header**: HSTS, X-Frame-Options, Content-Type-Nosniff, XSS-Filter etc. setzen (siehe Django-Settings-Beispiel unten).
+- **Monitoring & Error-Tracking**: Tools wie Sentry, ELK, Prometheus, Grafana nutzen.
+- **Automatisierte Tests & CI/CD**: Hohe Testabdeckung, automatisierte Deployments.
+- **Rate Limiting & API-Schutz**: z. B. mit django-ratelimit, Authentifizierung für APIs.
+- **Django Admin absichern**: Admin-URL umbenennen, Zugriff beschränken, 2FA nutzen.
+- **Umgang mit Secrets**: Niemals im Code, nur per Umgebungsvariablen oder Secret-Management.
+- **Settings trennen**: Entwicklung, Test, Produktion sauber trennen.
+- **DB-Verbindungen absichern**: SSL/TLS, Zugriff nur von nötigen Hosts.
+- **CORS & CSRF**: Header restriktiv setzen, CSRF immer aktivieren.
+- **Logging & Datenschutz**: Keine sensiblen Daten loggen, DSGVO beachten.
+
+**Beispiel für zusätzliche Sicherheits-Header in settings.py:**
+```python
+SECURE_HSTS_SECONDS = 31536000  # 1 Jahr
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+```
+
+**Hinweis:** Viele dieser Maßnahmen sind für ein MVP nicht zwingend, aber für den Live-Betrieb sehr wichtig! 
