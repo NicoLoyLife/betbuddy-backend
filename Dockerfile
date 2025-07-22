@@ -4,7 +4,7 @@ FROM python:3.13-slim
 # Arbeitsverzeichnis
 WORKDIR /app
 
-RUN apt-get update && apt-get upgrade -y && apt-get clean
+RUN apt-get update && apt-get upgrade -y && apt-get install -y netcat && apt-get clean
 
 # Abhängigkeiten
 COPY requirements.txt ./
