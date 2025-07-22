@@ -40,24 +40,40 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
       - name: Lint with black
-        run: black --check .
+        run: |
+          black --check . > black.log 2>&1 || echo "BLACK_FAILED=1" >> $GITHUB_ENV
       - name: Lint with flake8
-        run: flake8 .
+        run: |
+          flake8 . > flake8.log 2>&1 || echo "FLAKE8_FAILED=1" >> $GITHUB_ENV
       - name: Run Django tests
         run: |
           python manage.py migrate
-          python manage.py test
+          python manage.py test > test.log 2>&1 || echo "TEST_FAILED=1" >> $GITHUB_ENV
       - name: Integrationstests (URLs erreichbar)
         run: |
           pip install requests
-          pytest tests/test_integration_urls.py || echo "INTEGRATION_TEST_FAILED=1" >> $GITHUB_ENV
+          pytest tests/test_integration_urls.py > integrationtest.log 2>&1 || echo "INTEGRATION_TEST_FAILED=1" >> $GITHUB_ENV
       - name: Discord Benachrichtigung
         if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          MSG="📢 [${{ github.repository }}] ${{ github.event_name }} auf `${{ github.ref }}` von ${{ github.actor }} (${{ github.sha }})"
-          if [ "$INTEGRATION_TEST_FAILED" = "1" ]; then
-            MSG="$MSG\n❌ Integrationstest fehlgeschlagen: Mindestens eine wichtige URL ist nicht erreichbar. Siehe CI-Logs."
+          MSG="📢 [${{ github.repository }}] ${{ github.event_name }} auf \`${{ github.ref }}\` von ${{ github.actor }} (${{ github.sha }})"
+          DETAILS=""
+          if [ "$BLACK_FAILED" = "1" ]; then
+            DETAILS="$DETAILS\n❌ Black-Fehler:\n\`\`\`\n$(tail -n 20 black.log)\n\`\`\`"
           fi
+          if [ "$FLAKE8_FAILED" = "1" ]; then
+            DETAILS="$DETAILS\n❌ Flake8-Fehler:\n\`\`\`\n$(tail -n 20 flake8.log)\n\`\`\`"
+          fi
+          if [ "$TEST_FAILED" = "1" ]; then
+            DETAILS="$DETAILS\n❌ Django-Test-Fehler:\n\`\`\`\n$(tail -n 20 test.log)\n\`\`\`"
+          fi
+          if [ "$INTEGRATION_TEST_FAILED" = "1" ]; then
+            DETAILS="$DETAILS\n❌ Integrationstest fehlgeschlagen:\n\`\`\`\n$(tail -n 20 integrationtest.log)\n\`\`\`"
+          fi
+          if [ -z "$DETAILS" ]; then
+            DETAILS="\n✅ Alle Checks erfolgreich!"
+          fi
+          MSG="$MSG$DETAILS"
           curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"$MSG\"}" $DISCORD_WEBHOOK 
