@@ -58,7 +58,6 @@ Automatisiertes Backend für Fußballwetten-Analyse und Wettempfehlungen.
 - **Reverse Proxy/Webserver (nginx, Traefik)**: Statische/Medien-Dateien ausliefern, HTTPS aktivieren, HTTP auf HTTPS umleiten.
 - **Sicherheits-Header**: HSTS, X-Frame-Options, Content-Type-Nosniff, XSS-Filter etc. setzen (siehe Django-Settings-Beispiel unten).
 - **Monitoring & Error-Tracking**: Tools wie Sentry, ELK, Prometheus, Grafana nutzen.
-- **Automatisierte Tests & CI/CD**: Hohe Testabdeckung, automatisierte Deployments.
 - **Rate Limiting & API-Schutz**: z. B. mit django-ratelimit, Authentifizierung für APIs.
 - **Django Admin absichern**: Admin-URL umbenennen, Zugriff beschränken, 2FA nutzen.
 - **Umgang mit Secrets**: Niemals im Code, nur per Umgebungsvariablen oder Secret-Management.
