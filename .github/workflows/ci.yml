@@ -46,4 +46,11 @@ jobs:
       - name: Run Django tests
         run: |
           python manage.py migrate
-          python manage.py test 
+          python manage.py test
+      - name: Discord Benachrichtigung
+        if: always()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          MSG="📢 [${{ github.repository }}] ${{ github.event_name }} auf `${{ github.ref }}` von ${{ github.actor }} (${{ github.sha }})"
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"$MSG\"}" $DISCORD_WEBHOOK 
